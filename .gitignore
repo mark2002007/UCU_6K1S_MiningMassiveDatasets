@@ -3,6 +3,10 @@
 env
 venv
 requirements.in
-*.csv
+
 .DS_Store
 __pycache__
+
+*.csv
+*.pdf
+*.zip
