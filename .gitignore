@@ -8,5 +8,6 @@ requirements.in
 __pycache__
 
 *.csv
+!final_project/data/*/*.csv
 *.pdf
 *.zip
