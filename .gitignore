@@ -11,3 +11,6 @@ __pycache__
 !final_project/data/*/*.csv
 *.pdf
 *.zip
+
+final_project/data/checkpoints
+final_project/data/outputs
