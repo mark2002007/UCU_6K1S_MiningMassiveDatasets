@@ -6,6 +6,7 @@ requirements.in
 
 .DS_Store
 __pycache__
+_spark_metadata
 
 *.csv
 !final_project/data/*/*.csv
@@ -14,3 +15,4 @@ __pycache__
 
 final_project/data/checkpoints
 final_project/data/outputs
+final_project/data/test_streaming_csv

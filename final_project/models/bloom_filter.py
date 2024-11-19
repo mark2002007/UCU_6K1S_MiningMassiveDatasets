@@ -1,14 +1,11 @@
 import ast
 import os
 import math
-import pickle
 import bitarray
 import mmh3
 
 import pyspark.sql.functions as F
 import pyspark.sql.types as T
-from pyspark.sql.functions import monotonically_increasing_id, row_number
-from pyspark.sql import Window, Row
 
 import logging
 
@@ -147,11 +144,9 @@ class BloomFilterBasedModel:
         if not self.trained:
             raise ValueError("Model is not trained")
         
-        # bloom_filter_broadcast = self.spark_session.sparkContext.broadcast(pickle.dumps(self.bloom_filter))
         bloom_filter_broadcast = self.spark_session.sparkContext.broadcast(self.bloom_filter)
 
         def bloom_lookup(username):
-            # bloom_filter = pickle.loads(bloom_filter_broadcast.value)
             bloom_filter = bloom_filter_broadcast.value
             return int(bloom_filter.lookup(username))
         
