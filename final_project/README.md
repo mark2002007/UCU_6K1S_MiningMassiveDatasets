@@ -1,5 +1,9 @@
 # Final Project on Mining Massive Datasets course
 
+Task for the final project is discribed on the screenshot:
+
+![Task description](./assets/task.jpg)
+
 ## Setup
 1. Install JDK: either like in general Readme, or:
 ```bash
@@ -19,6 +23,20 @@ tar xzvf spark-3.5.3-bin-hadoop3.tgz
 
 ## Pipeline description
 
+Our pipeline consists of 6 components, Kafka as a streaming storage, and one Jupyter Notebook; and can be visually described as follows:
+
+![Pipiline description](./assets/project_scheme.png)
+
+### Pipeline components description
+
+Components in the pipiline are:
+1. **Data origin**: Python script to convert SSE stream from Wikimedia into a Kafka stream with specific wikipedia's edits.
+2. **Data collector**: PySpark script to collect (and possibly sample) data from the Kafka stream into folder with CSV files.
+3. **CSV streamer**: Python script to read CSVs from a folder and stream them into Kafka with a desired rate.
+4. **Bloom filter inference**: PySpark script to perform inference on an edits stream, and filtering out possible bots.
+5. **Model training notebook**: PySpark-based notebook to train a LogisticRegression and Word2Vec-based model, and save it for future usage.
+6. **Model inference**: PySpark script to be runned on a sampled stream and to obtain possible bots based on their comments. Streams possible bots to a different stream.
+7. **Bloom filter training**: PySpark script that performs recurrent retraining of BloomFilter, making it working only with bots that were active in some period, e.g. one day.
 
 ## Pipeline run
 Each component can be run separately, so we will leave their running scripts here:
