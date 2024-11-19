@@ -93,8 +93,8 @@ def inference_filter(kafka_broker, kafka_topic_in, kafka_topic_out, filter_path,
         F.col("true_positives"),
         F.col("false_positives"),
         F.col("false_negatives")
-    ).orderBy("window_start").writeStream \
-        .outputMode("complete") \
+    ).writeStream \
+        .outputMode("update") \
         .format("console") \
         .option("truncate", False) \
         .start()
