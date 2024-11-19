@@ -1,0 +1,2 @@
+size=19, hash_count=3, capacity=4, false_positive_rate=0.1, inserted_count=4
+[1, 0, 1, 0, 1, 1, 1, 1, 0, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0]
