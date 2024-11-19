@@ -50,9 +50,8 @@ def inference_model(kafka_broker, kafka_topic_in, kafka_topic_out, model_path, s
     ).withColumn(
         "fn", F.expr("CASE WHEN bot AND prediction = 0 THEN 1 ELSE 0 END")
     ).groupBy(
-        F.window("event_time", "1 minute", "30 seconds")
+        F.window("event_time", "10 minutes", "5 minutes")
     ).agg(
-        F.first('bot').alias("bots"),
         F.sum("tp").alias("true_positives"),
         F.sum("fp").alias("false_positives"),
         F.sum("fn").alias("false_negatives"),
