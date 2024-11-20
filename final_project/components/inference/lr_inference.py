@@ -83,7 +83,7 @@ def inference_model(kafka_broker, kafka_topic_in, kafka_topic_out, model_path, s
         .option("truncate", False) \
         .start()
 
-    predicted_bots = prediction_df.filter(F.col("prediction") == 1).select(F.col("user").alias("value")).distinct()
+    predicted_bots = prediction_df.filter(F.col("prediction") == 1).select(F.col("user").alias("value"))
 
     send_query = predicted_bots.writeStream \
         .format("kafka") \
