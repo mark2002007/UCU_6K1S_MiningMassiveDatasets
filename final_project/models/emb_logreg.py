@@ -1,6 +1,8 @@
 import os
 import pyspark.sql.functions as F
 
+from typing import Optional
+
 from pyspark.ml.classification import LogisticRegression, LogisticRegressionModel
 from sparknlp.base import EmbeddingsFinisher
 from sparknlp.annotator import DocumentAssembler, Tokenizer, Word2VecModel
@@ -24,8 +26,12 @@ def compute_average_vector(vectors):
 class EmbeddingsLogReg:
     _word2vec_model = None  # Static attribute for shared Word2Vec model
 
-    def __init__(self, maxIter: int, regParam: float, elasticNetParam: float):
-        self.lr = LogisticRegression(maxIter=maxIter, regParam=regParam, elasticNetParam=elasticNetParam) \
+    def __init__(self, maxIter: int, regParam: float, elasticNetParam: float, weightType: Optional[str] = None):
+        assert weightType is None or weightType in ["sqrt", "balanced"], "Unacceptable weight type"
+
+        self.weightType = weightType
+
+        self.lr = LogisticRegression(maxIter=maxIter, regParam=regParam, elasticNetParam=elasticNetParam, weightCol='weight') \
             .setFeaturesCol("sentence_embeddings") \
             .setLabelCol("label") \
             .setPredictionCol("prediction")
@@ -59,6 +65,22 @@ class EmbeddingsLogReg:
         self.logRegModel = None
         self.trained = False
 
+    def _add_weights(self, train_df):
+        if self.weightType == None:
+            return train_df.withColumn("weight", F.lit(1.0))
+        
+        y_collect = train_df.select('label').groupBy('label').count().collect()
+        bin_counts = {y['label']: y['count'] for y in y_collect}
+        total = sum(bin_counts.values())
+        n_labels = len(bin_counts)
+
+        if self.weightType == 'balanced':
+            weights = {bin_: total/(n_labels*count) for bin_, count in bin_counts.items()}
+            return train_df.withColumn('weight', F.when(F.col('label')==1.0, weights[1]).otherwise(weights[0]))
+        else:
+            weights = {bin_: (total/(n_labels*count))**0.5 for bin_, count in bin_counts.items()}
+            return train_df.withColumn('weight', F.when(F.col('label')==1.0, weights[1]).otherwise(weights[0]))
+
     def fit(self, train_df):
         self.pipelineModel = self.preparation_pipeline.fit(train_df)
 
@@ -68,6 +90,8 @@ class EmbeddingsLogReg:
         train_df_wembs = self.embeddingsFinisher.transform(train_df_wembs)
 
         train_df_wembs = train_df_wembs.withColumn("sentence_embeddings", compute_average_vector(F.col("finished_embeddings")))
+
+        train_df_wembs = self._add_weights(train_df_wembs)
 
         self.logRegModel = self.lr.fit(train_df_wembs)
         self.trained = True
