@@ -96,17 +96,6 @@ class EmbeddingsLogReg:
         self.logRegModel = self.lr.fit(train_df_wembs)
         self.trained = True
 
-    def fitMultiple(self, dataset, paramMaps):
-        """Method needed for a parameter search, to train multiple models"""
-
-        for i, paramMap in enumerate(paramMaps):
-            paramMap = {key.name: val for key, val in paramMap.items()}
-            embLR = EmbeddingsLogReg(paramMap["maxIter"], paramMap["regParam"], paramMap["elasticNetParam"])
-
-            embLR.fit(dataset)
-            
-            yield i, embLR
-
     def predict(self, df, output_pred_col: str = "prediction"):
         if not self.trained:
             raise ValueError("Model is not trained")
@@ -120,9 +109,6 @@ class EmbeddingsLogReg:
         self.logRegModel.setPredictionCol(output_pred_col)
         predictions = self.logRegModel.transform(df_wembs)
         return predictions
-    
-    def transform(self, df, _):
-        return self.predict(df)
     
     def save(self, path):
         if not self.trained:
@@ -147,7 +133,7 @@ class EmbeddingsLogReg:
 
     @staticmethod
     def load(path):
-        embLR = EmbeddingsLogReg(0, 0, 0)
+        embLR = EmbeddingsLogReg(0, 0, 0, None)
         embLR._load(path)
 
         return embLR

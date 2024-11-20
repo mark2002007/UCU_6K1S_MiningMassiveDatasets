@@ -29,7 +29,7 @@ services:
       - BROKER=172.25.0.12:9092
       - TOPIC_IN=wikipedia_data
       - TOPIC_OUT=wikipedia_filtered
-      - FILTER_PATH=./data/filter_train_small
+      - FILTER_PATH=./data/filter
     networks:
       kafkanet:
         ipv4_address: 172.25.0.14
@@ -54,7 +54,7 @@ services:
       - kafka
     
   lr-inference:
-    image: lr_inference:0.1
+    image: lr_inference:0.2
     container_name: lr-inference
     volumes:
       - ./:/app
@@ -62,7 +62,7 @@ services:
       - BROKER=172.25.0.12:9092
       - TOPIC_IN=wikipedia_data
       - TOPIC_OUT=wikipedia_bots
-      - MODEL_PATH=./data/logreg_small
+      - MODEL_PATH=./data/logreg_big_best
       - SAMPLING_FREQ=0.2
     networks:
       kafkanet:
@@ -78,7 +78,10 @@ services:
     environment:
       - BROKER=172.25.0.12:9092
       - TOPIC=wikipedia_bots
-      - FILTER_PATH=./data/filter_train_small
+      - FILTER_PATH=./data/filter
+    networks:
+      kafkanet:
+        ipv4_address: 172.25.0.17
     depends_on:
       - kafka
       - lr-inference
@@ -92,6 +95,9 @@ services:
       - BROKER=172.25.0.12:9092
       - TOPIC=wikipedia_data
       - DEST_FOLDER=./data/csv_stream
+    networks:
+      kafkanet:
+        ipv4_address: 172.25.0.18
     depends_on:
       - kafka
       - data-origin
