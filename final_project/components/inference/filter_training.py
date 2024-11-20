@@ -24,6 +24,9 @@ def train_filter(kafka_broker, kafka_topic, filter_path, train_period, forget_pe
     windowed_df = input_df.withWatermark("timestamp", f"{forget_period} seconds")
 
     def train_and_save_model(batch_df, batch_id):
+        if len(batch_df):
+            print(f"Not changing filter as there are no new bots found (Batch ID: {batch_id})")
+            return
         bloomfilter = BloomFilterBasedModel(spark, fpr=0.1)
         batch_df = batch_df.withColumn('user', F.col('value').cast("string")).withColumn(
             'label', F.lit(1)
