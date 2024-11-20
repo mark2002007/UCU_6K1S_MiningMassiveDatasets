@@ -18,7 +18,7 @@ def collect_csvs(kafka_broker: str, kafka_topic: str, sampling_freq: float, outp
         .format("kafka") \
         .option("kafka.bootstrap.servers", kafka_broker) \
         .option("subscribe", kafka_topic) \
-        .option("startingOffsets", "earliest") \
+        .option("startingOffsets", "latest") \
         .load()
     
     parsed_df = input_df.select(

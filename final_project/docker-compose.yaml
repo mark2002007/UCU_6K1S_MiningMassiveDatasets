@@ -83,6 +83,19 @@ services:
       - kafka
       - lr-inference
 
+  data-collection:
+    image: data_collection:0.1
+    container_name: data-collection
+    volumes:
+      - ./:/app
+    environment:
+      - BROKER=172.25.0.12:9092
+      - TOPIC=wikipedia_data
+      - DEST_FOLDER=./data/csv_stream
+    depends_on:
+      - kafka
+      - data-origin
+
 networks:
   kafkanet:
     name: kafkanet
