@@ -18,7 +18,7 @@ def train_filter(kafka_broker, kafka_topic, filter_path, train_period, forget_pe
         .format("kafka") \
         .option("kafka.bootstrap.servers", kafka_broker) \
         .option("subscribe", kafka_topic) \
-        .option("startingOffsets", "earliest") \
+        .option("startingOffsets", "latest") \
         .load()
     
     windowed_df = input_df.withWatermark("timestamp", f"{forget_period} seconds")

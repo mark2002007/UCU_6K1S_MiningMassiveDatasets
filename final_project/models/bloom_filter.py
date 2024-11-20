@@ -39,7 +39,9 @@ class BloomFilter: # https://en.wikipedia.org/wiki/Bloom_filter
         return max(1, size)
 
     @staticmethod
-    def _calculate_optimal_hash_count(size, capacity):  # 
+    def _calculate_optimal_hash_count(size, capacity): 
+        if capacity == 0:
+            return 1
         hash_count = int((size / capacity) * math.log(2))
         return max(1, hash_count)
     
