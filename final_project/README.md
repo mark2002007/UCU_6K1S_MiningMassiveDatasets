@@ -39,6 +39,28 @@ Components in the pipiline are:
 7. **Bloom filter training**: PySpark script that performs recurrent retraining of BloomFilter, making it working only with bots that were active in some period, e.g. one day.
 
 ## Pipeline run
+
+### Docker run
+
+The pipeline is dockerized now, and can be run in two steps (after [installing Docker](https://www.docker.com/get-started/) and starting it):
+1. Create local docker images of all the components:
+```bash
+cd final_project
+docker build -t filter_inference:0.1 -f filter_inference.Dockerfile .
+docker build -t data_origin:0.1 -f data_origin.Dockerfile .
+docker build -t lr_inference:0.2 -f lr_inference.Dockerfile .
+docker build -t filter_training:0.1 -f filter_training.Dockerfile .
+docker build -t data_collection:0.1 -f data_collection.Dockerfile .
+
+```
+2. `docker-compose up`
+
+That's it!
+
+![](./assets/docker-compose-ok.jpg)
+
+### Manual run
+
 Each component can be run separately, so we will leave their running scripts here:
 0. Create Kafka topics:
 ```bash
