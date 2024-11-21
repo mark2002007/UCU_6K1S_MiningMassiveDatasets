@@ -71,7 +71,7 @@ bin/kafka-topics.sh --create --bootstrap-server localhost:9092 --replication-fac
     ```
     For example:
     ```bash
-    $SPARK_HOME/bin/spark-submit --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.5.1 --driver-memory 10G components/data_collection/data_collection.py --broker localhost:9092 --topic wikipedia_data --sampling_freq 0.3 --dest_folder ./data/train/
+    $SPARK_HOME/bin/spark-submit --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.5.1 --driver-memory 2G components/data_collection/data_collection.py --broker localhost:9092 --topic wikipedia_data --sampling_freq 0.3 --dest_folder ./data/train/
     ```
 3. Models inference and training:
     - Embedding-based Logistic Regression model inference:

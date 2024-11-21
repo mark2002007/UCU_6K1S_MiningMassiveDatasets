@@ -16,3 +16,4 @@ _spark_metadata
 final_project/data/checkpoints
 final_project/data/outputs
 final_project/data/test_streaming_csv
+final_project/data/csv_stream
