@@ -27,7 +27,14 @@ def inference_model(kafka_broker, kafka_topic_in, kafka_topic_out, model_path, s
         F.from_json(F.col("value").cast("string"), changeSchema).alias("parsed_value")
     ).select("parsed_value.*")
 
-    parsed_df = parsed_df.withColumn(
+    user_activity_df = parsed_df.groupBy(
+        F.window(F.from_unixtime(F.col("timestamp")), "1 minute"), "user"
+    ).agg(F.count("*").alias("edits_per_minute")).select(
+        F.col("user"), F.col("edits_per_minute")
+    )
+
+    enriched_df = parsed_df.join(user_activity_df, on="user", how="left").fillna(0, subset=["edits_per_minute"])
+    enriched_df = enriched_df.withColumn(
         "text",
         F.concat(
             F.col("title"),
@@ -35,7 +42,7 @@ def inference_model(kafka_broker, kafka_topic_in, kafka_topic_out, model_path, s
         )
     )
 
-    sampled_df = parsed_df.filter(
+    sampled_df = enriched_df.filter(
         (F.abs(F.hash(F.col("text"))) % 1000 / 1000) < sampling_freq 
     )
 
